@@ -119,6 +119,30 @@ const commands: Record<
 			if (e instanceof ErrnoError) throw new CommandError("mkdir", e);
 		}
 	},
+	mv(args, fs) {
+		if (args.length === 0)
+			throw new CommandError("usage: mv sources... target");
+		if (args.length === 1)
+			throw new CommandError("missing destination");
+
+		try {
+			if (args.length === 2) {
+				let dest = args[1];
+				fs.rename(args[0], dest);
+			} else {
+				const sources = args.slice(0, -1);
+				const destDir = args.at(-1)!;
+
+				for (const src of sources) {
+					const dest = combineTargetName(src, destDir);
+					fs.rename(src, dest);
+				}
+			}
+		} catch (e) {
+			if (e instanceof ErrnoError)
+				throw new CommandError("rename", e);
+		}
+	},
 	echo(args, fs) {
 		let redirectIndex = args.indexOf(">");
 		if (redirectIndex === -1) redirectIndex = args.length;

@@ -52,6 +52,21 @@ function setParent(target: IDirectory, newParent: IDirectory) {
 	newParent.linkCount++;
 }
 
+function* walkAncestors(dir: IDirectory): Iterable<IDirectory> {
+	let prev: IDirectory;
+	do {
+		prev = dir;
+
+		const entry = dir.entries.get("..");
+		if (entry == null || entry.type !== FileType.Directory) {
+			throw new Error("invalid parent");
+		}
+		dir = entry;
+
+		yield dir;
+	} while (dir !== prev);
+}
+
 export class Filesystem implements IReadonlyFilesystem {
 	readonly inodes = new Map<number, Inode>();
 	readonly root: IDirectory;
@@ -106,6 +121,68 @@ export class Filesystem implements IReadonlyFilesystem {
 			followSymlinks: false,
 		});
 		this.createLink(parent, filename, symlink(this.nextInodeId(), path1));
+	}
+
+	rename(oldPath: string, newPath: string) {
+		const [oldParent, oldEntry] = this.resolveFinal(oldPath, {
+			followSymlinks: false,
+		});
+		const [newParent, newEntry] = this.resolveFinal(newPath, {
+			followSymlinks: false,
+		});
+		this.renameAt(oldParent, oldEntry, newParent, newEntry);
+	}
+
+	// https://pubs.opengroup.org/onlinepubs/9799919799/functions/rename.html
+	renameAt(
+		oldParent: IDirectory,
+		oldName: string,
+		newParent: IDirectory,
+		newName: string,
+	) {
+		if (
+			oldName === "." ||
+			oldName === ".." ||
+			newName === "." ||
+			newName === ".."
+		) {
+			throw new EINVAL();
+		}
+
+		const targetInode = oldParent.entries.get(oldName);
+		if (targetInode == null) throw new ENOENT();
+
+		const existingInode = newParent.entries.get(newName);
+		if (existingInode === targetInode) return;
+
+		if (targetInode.type === FileType.Directory) {
+			let existingDir: IDirectory | null = null;
+			if (existingInode != null) {
+				if (existingInode.type !== FileType.Directory)
+					throw new ENOTDIR();
+				existingDir = existingInode;
+				if (existingDir.entries.size > 2) throw new ENOTEMPTY();
+			}
+
+			// "The old pathname shall not name an ancestor directory of the new pathname."
+			if (targetInode === newParent) throw new EINVAL();
+			for (const ancestor of walkAncestors(newParent)) {
+				if (targetInode === ancestor) throw new EINVAL();
+			}
+
+			if (existingInode != null) this.inodes.delete(existingInode.id);
+		} else {
+			if (existingInode != null) {
+				if (existingInode.type === FileType.Directory)
+					throw new EISDIR();
+
+				if (--existingInode.linkCount === 0)
+					this.inodes.delete(existingInode.id);
+			}
+		}
+
+		oldParent.entries.delete(oldName);
+		newParent.entries.set(newName, targetInode);
 	}
 
 	remove(path: string) {
