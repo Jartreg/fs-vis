@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ErrnoError } from "./errno";
 import { Filesystem } from "./fs-impl";
 import { FileType } from "./fs-interfaces";
-import { FSTXDispatcher, useFSContext } from "./fs-react";
+import { type FSTXDispatcher, useFSContext } from "./fs-react";
 import { splitPath } from "./fs-utils";
 
 type Result = { success: true; msg?: string } | { success: false; msg: string };
@@ -131,7 +131,7 @@ const commands: Record<
 		} else {
 			return concatenated.trim();
 		}
-	}
+	},
 };
 
 function combineTargetName(src: string, destDir: string) {

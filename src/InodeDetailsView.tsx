@@ -1,5 +1,6 @@
 import { useSelectInode } from "./App";
-import { FileType, IDirectory, IFile, Inode } from "./fs-interfaces";
+import type { IDirectory, IFile, Inode } from "./fs-interfaces";
+import { FileType } from "./fs-interfaces";
 import { useFSContext } from "./fs-react";
 
 interface InodeDetailsViewProps {
@@ -13,17 +14,17 @@ export function InodeDetailsView({ inode }: InodeDetailsViewProps) {
 		inode.type === FileType.Directory
 			? "dir"
 			: inode.type === FileType.Symlink
-			? "symlink"
-			: "regular";
+				? "symlink"
+				: "regular";
 
 	const title =
 		inode === fs.root
 			? "Root Directory"
 			: inode.type === FileType.Directory
-			? "Directory"
-			: inode.type === FileType.Symlink
-			? "Symbolic Link"
-			: "Regular File";
+				? "Directory"
+				: inode.type === FileType.Symlink
+					? "Symbolic Link"
+					: "Regular File";
 
 	return (
 		<div className={`inode-details panel inode-details__${typeCls}`}>
@@ -93,7 +94,7 @@ function DirectoryListing({ dir }: { dir: IDirectory }) {
 										onClick={(e) => {
 											e.stopPropagation();
 											dispatch((fs) =>
-												fs.removeAt(dir, name)
+												fs.removeAt(dir, name),
 											);
 										}}
 									>

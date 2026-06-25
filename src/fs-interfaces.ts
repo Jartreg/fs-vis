@@ -1,4 +1,4 @@
-export const enum FileType {
+export enum FileType {
 	Regular,
 	Directory,
 	Symlink,
@@ -37,6 +37,6 @@ export interface IReadonlyFilesystem {
 	resolvePath(path: string | string[], options?: ResolveOptions): Inode;
 	resolveFinal(
 		path: string | string[],
-		options?: ResolveOptions
+		options?: ResolveOptions,
 	): [IDirectory, string];
 }

@@ -1,4 +1,3 @@
-import { POSIX_SYMLOOP_MAX, splitPath, isEmptyPath } from "./fs-utils";
 import {
 	EEXIST,
 	EINVAL,
@@ -9,8 +8,7 @@ import {
 	ENOTEMPTY,
 	EPERM,
 } from "./errno";
-import {
-	FileType,
+import type {
 	IDirectory,
 	IFile,
 	IReadonlyFilesystem,
@@ -18,6 +16,8 @@ import {
 	Inode,
 	ResolveOptions,
 } from "./fs-interfaces";
+import { FileType } from "./fs-interfaces";
+import { POSIX_SYMLOOP_MAX, isEmptyPath, splitPath } from "./fs-utils";
 
 const file = (id: number, data: string): IFile => ({
 	id,
@@ -177,7 +177,7 @@ export class Filesystem implements IReadonlyFilesystem {
 			cwd = this.root,
 			followSymlinks = true,
 			remainingSymlinkTraversals = POSIX_SYMLOOP_MAX,
-		}: ResolveOptions = {}
+		}: ResolveOptions = {},
 	): [IDirectory, string] {
 		if (typeof path === "string") path = splitPath(path);
 
@@ -245,7 +245,7 @@ export class Filesystem implements IReadonlyFilesystem {
 			followSymlinks = true,
 			remainingSymlinkTraversals = POSIX_SYMLOOP_MAX,
 			...restOptions
-		}: ResolveOptions = {}
+		}: ResolveOptions = {},
 	): Inode {
 		const [parent, filename] = this.resolveFinal(path, {
 			followSymlinks,

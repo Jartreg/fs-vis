@@ -1,5 +1,5 @@
 import {
-	RefObject,
+	type RefObject,
 	createContext,
 	useCallback,
 	useContext,
@@ -8,20 +8,20 @@ import {
 } from "react";
 import {
 	GraphCanvas,
-	GraphCanvasRef,
-	useSelection,
+	type GraphCanvasRef,
+	type Theme,
 	lightTheme,
-	Theme,
+	useSelection,
 } from "reagraph";
-import { InodeDetailsView } from "./InodeDetailsView";
-import { IReadonlyFilesystem, Inode } from "./fs-interfaces";
+import type { IReadonlyFilesystem, Inode } from "./fs-interfaces";
 import {
 	FSProvider,
-	GraphDef,
+	type GraphDef,
 	defaultGraphOptions,
 	useFSGraph,
 	useFilesystem,
 } from "./fs-react";
+import { InodeDetailsView } from "./InodeDetailsView";
 import { Terminal } from "./Terminal";
 
 const customLightTheme: Theme = {
@@ -46,7 +46,7 @@ function App() {
 
 	const selectInode = useCallback(
 		(inode: Inode) => selection.setSelections([inode.id.toString()]),
-		[selection.setSelections]
+		[selection.setSelections],
 	);
 
 	return (
@@ -56,6 +56,7 @@ function App() {
 					<GraphCanvas
 						ref={graphRef}
 						layoutType="hierarchicalLr"
+						sizingType="none"
 						labelType="all"
 						lassoType="node"
 						draggable
@@ -83,7 +84,7 @@ export const useSelectInode = () => useContext(selectionCtx);
 function useGraphSelection(
 	fs: IReadonlyFilesystem,
 	graphRef: RefObject<GraphCanvasRef | null>,
-	graph: GraphDef
+	graph: GraphDef,
 ) {
 	const {
 		selections,
@@ -109,7 +110,7 @@ function useGraphSelection(
 			lassoRef.current = lassoSelections;
 			wrappedOnLasso?.(lassoSelections);
 		},
-		[wrappedOnLasso]
+		[wrappedOnLasso],
 	);
 
 	const selectedNodeId = selections.at(-1);

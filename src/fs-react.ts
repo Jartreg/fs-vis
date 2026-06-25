@@ -6,10 +6,10 @@ import {
 	useReducer,
 	useState,
 } from "react";
-import { GraphEdge, GraphNode } from "reagraph";
+import type { GraphEdge, GraphNode } from "reagraph";
 import { ErrnoError } from "./errno";
 import { Filesystem } from "./fs-impl";
-import { FileType, IReadonlyFilesystem } from "./fs-interfaces";
+import { FileType, type IReadonlyFilesystem } from "./fs-interfaces";
 
 export interface GraphDef {
 	nodes: GraphNode[];
@@ -46,7 +46,7 @@ function createFilesystem(): Filesystem {
 	fs.mkdir("/bin");
 	fs.createFile(
 		"/etc/shadow",
-		"root:!:17497::\nmon:*:17457::\nbin:*:17457::"
+		"root:!:17497::\nmon:*:17457::\nbin:*:17457::",
 	);
 	const pseudoBinary =
 		"1010011100\n0000111101\n0100101000\n0000000110\n1101101100\n0000111010\n0111110100\n1000101111\n1110111101\n0111011100";
@@ -72,7 +72,7 @@ export function useFSContext(): FSContext {
 export function useFSGraph(
 	fs: IReadonlyFilesystem,
 	options: GraphOptions,
-	version: number
+	version: number,
 ): GraphDef {
 	return useMemo(() => deriveGraph(fs, options), [version, fs, options]);
 }

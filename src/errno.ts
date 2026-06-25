@@ -1,5 +1,4 @@
-
-export abstract class ErrnoError extends Error { }
+export abstract class ErrnoError extends Error {}
 
 export class ENOENT extends ErrnoError {
 	constructor() {
