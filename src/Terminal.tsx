@@ -127,7 +127,12 @@ const commands: Record<
 		if (redirectIndex < args.length) {
 			const target = args.at(redirectIndex + 1);
 			if (!target) throw new CommandError("Expected target file");
-			fs.createOrWriteFile(target, concatenated);
+			try {
+				fs.createOrWriteFile(target, concatenated);
+			} catch (e) {
+				if (e instanceof ErrnoError) throw new CommandError("open", e);
+				throw e;
+			}
 		} else {
 			return concatenated.trim();
 		}
