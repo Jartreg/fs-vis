@@ -156,7 +156,7 @@ function runCommand(cmd: string, dispatch: FSTXDispatcher) {
 	return result;
 }
 
-const tokenRegex = /^\s*("(?:\\.|[^"\\]|)*"|[^"\s]+)\s*/;
+const tokenRegex = /^\s*("(?:\\.|[^"\\])*"|[^"\s]+)\s*/;
 
 function tokenise(cmd: string): string[] | null {
 	const tokens: string[] = [];
