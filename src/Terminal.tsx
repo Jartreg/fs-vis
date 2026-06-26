@@ -198,7 +198,7 @@ function tokenise(cmd: string): string[] | null {
 		if (token.startsWith(`"`)) {
 			token = token.slice(1, -1);
 			let valid = true;
-			token.replace(/\\./g, (substr) => {
+			token = token.replace(/\\./g, (substr) => {
 				switch (substr) {
 					case `\\"`:
 						return `"`;
