@@ -55,7 +55,7 @@ function App() {
 				<div className="App">
 					<GraphCanvas
 						ref={graphRef}
-						layoutType="hierarchicalLr"
+						layoutType="hierarchicalTd"
 						sizingType="none"
 						labelType="all"
 						lassoType="node"
